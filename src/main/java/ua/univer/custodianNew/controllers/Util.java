@@ -46,7 +46,8 @@ public final class Util {
 
     static THeaderRequest getHeaderRequest() {
         THeaderRequest header = new THeaderRequest();
-        header.setRequestID(UUID.randomUUID().toString());
+        //header.setRequestID(UUID.randomUUID().toString());
+        header.setRequestID("860966B1-2E36-4242-85F1-BFA4F23AA487");
         header.setTimeStamp(xmlGregorianCalendar());
         header.setSourceAPPidentity("1DD4EC32-45DB-404A-A123-6F657895E502");
         return header;

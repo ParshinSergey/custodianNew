@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 
 import java.io.File;
 import java.net.http.HttpClient;
+import java.util.Properties;
 
 @Configuration
 public class AppConfiguration {
@@ -30,6 +31,11 @@ public class AppConfiguration {
 
     @Bean
     public HttpClient getHttpClient(){
+
+        // to disable hostname verification
+        Properties props = System.getProperties();
+        props.setProperty("jdk.internal.httpclient.disableHostnameVerification", Boolean.TRUE.toString());
+
         return HttpClient.newHttpClient();
     }
 

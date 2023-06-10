@@ -10,7 +10,9 @@ import java.net.http.HttpClient;
 
 public class BaseController {
 
-    public static final String DECKRA_URL = "http://localhost:8080/api/service/result";
+    //public static final String DECKRA_URL = "https://10.1.2.80/API_BP/cp_api.dll";
+    public static final String DECKRA_URL = "https://localhost/API_BP/cp_api.dll";
+    public static final String DECKRA_URL_TEST = "http://localhost:8081/api/service/result";
 
     private final Marshaller marshaller;
     protected final HttpClient httpClient;

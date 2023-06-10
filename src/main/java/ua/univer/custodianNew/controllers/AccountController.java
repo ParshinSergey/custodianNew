@@ -1,14 +1,14 @@
 package ua.univer.custodianNew.controllers;
 
-import dmt.custodian2016.Request;
-import dmt.custodian2016.TCustomer;
-import dmt.custodian2016.THeaderRequest;
-import dmt.custodian2016.TbodyRequest;
+import dmt.custodian2016.*;
 import jakarta.xml.bind.Marshaller;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
+import javax.net.ssl.HttpsURLConnection;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -42,13 +42,16 @@ public class AccountController extends BaseController {
     }
 
     @PostMapping (value = "/" + NEW_ACCOUNT + "UO", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Request> getNewAccountUO (@RequestBody Request request) {
+    public ResponseEntity<String> getNewAccountUO (@RequestBody Request request) {
         THeaderRequest tHeaderRequest = Util.getHeaderRequest();
         tHeaderRequest.setRequestType(NEW_ACCOUNT);
         request.setHeader(tHeaderRequest);
 
         Writer writer = new StringWriter();
         saveToXml(request, writer);
+
+        // стремное место
+        // HttpsURLConnection.setDefaultHostnameVerifier ((hostname, session) -> true);
 
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(URI.create(DECKRA_URL))
@@ -61,17 +64,20 @@ public class AccountController extends BaseController {
         try {
             responce = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
         } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Error connecting to Deckra-service. Message - " + e.getMessage());
         }
 
-        System.out.println(responce.body());
+       // System.out.println(responce.body());
 
-        return ResponseEntity.ok().body(request);
+        return ResponseEntity.ok().body(responce.body());
     }
 
 
     @PostMapping (value = "/" + NEW_ACCOUNT + "FO", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Request> getNewAccountFO (@RequestParam Request request) {
+    public ResponseEntity<Request> getNewAccountFO (@RequestParam(name = "shortName") String fio,
+                                                    @RequestParam(name = "longName") String fullFio) {
+        Request request = new Request();
+
         THeaderRequest tHeaderRequest = Util.getHeaderRequest();
         tHeaderRequest.setRequestType(NEW_ACCOUNT);
         request.setHeader(tHeaderRequest);
@@ -80,11 +86,26 @@ public class AccountController extends BaseController {
         tCustomer.setAccount(null);
         tCustomer.setCustomerID(null);
         tCustomer.setCNUM(null);
-        tCustomer.setCountry(null);
+
+        TCustomer.Country sdf = new TCustomer.Country();
+        sdf.setValue("804");
+        tCustomer.setCountry(sdf);
+
+
         tCustomer.setCountryTax(null);
         tCustomer.setIdCode(null);
         tCustomer.setClientTypeCode(null);
-        tCustomer.setName(null);
+
+        TName tName = new TName();
+        TName.LongName longName = new TName.LongName();
+        longName.setValue(fullFio);
+        TName.ShortName shortName = new TName.ShortName();
+        shortName.setValue(fio);
+        tName.setLongName(longName);
+        tName.setShortName(shortName);
+        tCustomer.setName(tName);
+
+
         tCustomer.setAddresses(null);
         tCustomer.setDocFO(null);
         tCustomer.setDocUO(null);
@@ -97,9 +118,14 @@ public class AccountController extends BaseController {
         tCustomer.setRefusingCode(null);
         tCustomer.setForm(null);
 
+        TnewAccountRequest tnewAccountRequest = new TnewAccountRequest();
+        tnewAccountRequest.setCustomer(tCustomer);
+
         TbodyRequest tbodyRequest = new TbodyRequest();
-        tbodyRequest.setCustomer(tCustomer);
+        tbodyRequest.setNewAccount(tnewAccountRequest);
+
         request.setBody(tbodyRequest);
+
 
 
         File file = Util.getFile();
