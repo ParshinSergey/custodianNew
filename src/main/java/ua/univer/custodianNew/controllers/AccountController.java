@@ -7,8 +7,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import ua.univer.custodianNew.dto.FormFO;
 
-import javax.net.ssl.HttpsURLConnection;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -130,6 +130,38 @@ public class AccountController extends BaseController {
 
         File file = Util.getFile();
         saveToFileXml(request, file);
+
+        return ResponseEntity.ok().body(request);
+    }
+
+    @PostMapping(value = "/" + NEW_ACCOUNT + "Test", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Request> getNewAccountTest (@RequestBody FormFO form){
+
+        Request request = new Request();
+
+        THeaderRequest tHeaderRequest = Util.getHeaderRequest();
+        tHeaderRequest.setRequestType(NEW_ACCOUNT);
+        tHeaderRequest.setRequestID(form.getRequestID());
+        request.setHeader(tHeaderRequest);
+
+        TbodyRequest tbodyRequest = Util.convertFromFormToBody(form);
+        request.setBody(tbodyRequest);
+
+        Writer writer = new StringWriter();
+        saveToXml(request, writer);
+
+        HttpRequest httpRequest = HttpRequest.newBuilder()
+                .uri(URI.create(DECKRA_URL_TEST))
+                .POST(HttpRequest.BodyPublishers.ofString(writer.toString()))
+                .header("Content-Type", "application/xml")
+                .build();
+
+        HttpResponse<String> responce = null;
+        try {
+            responce = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+        } catch (IOException | InterruptedException e) {
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Error connecting to Deckra-service. Message - " + e.getMessage());
+        }
 
         return ResponseEntity.ok().body(request);
     }
