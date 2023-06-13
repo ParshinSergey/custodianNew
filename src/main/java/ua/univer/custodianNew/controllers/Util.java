@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,8 +40,20 @@ public final class Util {
         return file;
     }
 
-    static XMLGregorianCalendar xmlGregorianCalendar(){
-        LocalDateTime dateTime = LocalDateTime.now();
+    static XMLGregorianCalendar xmlGregorianCalendar(LocalDate dateTime){
+        XMLGregorianCalendar date = null;
+        if (dateTime == null){
+            return null;
+        }
+        try {
+            date = DatatypeFactory.newInstance().newXMLGregorianCalendar(dateTime.toString());
+        } catch (DatatypeConfigurationException e) {
+            throw new RuntimeException(e);
+        }
+        return date;
+    }
+
+    static XMLGregorianCalendar xmlGregorianCalendar(LocalDateTime dateTime){
         XMLGregorianCalendar date = null;
         try {
             date = DatatypeFactory.newInstance().newXMLGregorianCalendar(dateTime.toString());
@@ -50,11 +63,12 @@ public final class Util {
         return date;
     }
 
+
     static THeaderRequest getHeaderRequest() {
         THeaderRequest header = new THeaderRequest();
         //header.setRequestID(UUID.randomUUID().toString());
         header.setRequestID("860966B1-2E36-4242-85F1-BFA4F23AA487");
-        header.setTimeStamp(xmlGregorianCalendar());
+        header.setTimeStamp(xmlGregorianCalendar( LocalDateTime.now()));
         header.setSourceAPPidentity("1DD4EC32-45DB-404A-A123-6F657895E502");
         return header;
     }
@@ -67,7 +81,6 @@ public final class Util {
         if (form.getCustomerID() != null) {
             tCustomer.setCustomerID(new BigInteger(form.getCustomerID().toString()));
         }
-
         var cnum = new TCustomer.CNUM();
         cnum.setValue(form.getCnum());
         tCustomer.setCNUM(cnum);
@@ -120,26 +133,55 @@ public final class Util {
         TdocFO document = new TdocFO();
         document.setDocSerial(form.getDocSerial());
         document.setDocNumber(form.getDocNumber());
-       // document.setDocDate(form.getDocDate());
+        document.setDocDate(Util.xmlGregorianCalendar(form.getDocDate()));
         document.setDocWho(form.getDocWho());
         document.setDocType(form.getDocType());
-       // document.setDocDatestart(form.getDocDateStart());
-       // document.setDocDateStop(form.getDocDateStop());
+        document.setDocDatestart(Util.xmlGregorianCalendar(form.getDocDateStart()));
+        document.setDocDateStop(Util.xmlGregorianCalendar(form.getDocDateStop()));
         document.setDocSDRnumber(form.getDocSDRnumber());
         tCustomer.setDocFO(document);
 
+        TBankDetail bankDetail = new TBankDetail();
+        bankDetail.setMFO(form.getMfo());
+        bankDetail.setIBAN(form.getIban());
+        bankDetail.setCardAccount(form.getCardAccount());
+        bankDetail.setBankName(form.getBankName());
+        bankDetail.setCurrency(form.getCurrency());
+        bankDetail.setBIC(form.getBic());
+        bankDetail.setLEI(form.getLei());
+        if (form.getBankDetailID() != null) {
+            bankDetail.setBankDetailID(new BigInteger(form.getBankDetailID().toString()));
+        }
+        bankDetail.setUse4Income(form.isUse4Income());
+        if (form.getType() != null) {
+            bankDetail.setType(new BigInteger(form.getType().toString()));
+        }
+        var bankDetails = new TCustomer.BankDetails();
+        bankDetails.getBankDetail().add(bankDetail);
+        tCustomer.setBankDetails(bankDetails);
 
+        var contact = new TCustomer.Contact();
+        var hhh = new TContact.Phone();
+        hhh.setValue(form.getPhone());
+        contact.setPhone(hhh);
+        var mobilePhone = new TContact.MobilePhone();
+        mobilePhone.setValue(form.getMobilePhone());
+        contact.setMobilePhone(mobilePhone);
+        var eMail = new TContact.EMails();
+        var eMailGeneral = new TContact.EMails.EMailGeneral();
+        eMailGeneral.setValue(form.geteMailGeneral());
+        eMail.setEMailGeneral(eMailGeneral);
+        contact.setEMails(eMail);
+        tCustomer.setContact(contact);
 
-        tCustomer.setBankDetails(null);
-        tCustomer.setAddParams(null);
-        tCustomer.setContact(null);
-        tCustomer.setBirthInfo(null);
-        tCustomer.setFund(null);
-        tCustomer.setCurrency(null);
-        tCustomer.setRefusingCode(null);
-        tCustomer.setForm(null);
+        var birthInfo = new TCustomer.BirthInfo();
+        birthInfo.setBirthDate(xmlGregorianCalendar(form.getBirthDate()));
+        birthInfo.setBirthPlace(form.getBirthPlace());
+        tCustomer.setBirthInfo(birthInfo);
 
-
+        var refusingCode = new TCustomer.RefusingCode();
+        refusingCode.setValue(form.isRefusingCode());
+        tCustomer.setRefusingCode(refusingCode);
 
 
         TnewAccountRequest tnewAccountRequest = new TnewAccountRequest();
@@ -148,19 +190,18 @@ public final class Util {
         typeCode.setValue(form.getNssmcClientTypeCode());
         tnewAccountRequest.setNssmcClientTypeCode(typeCode);
 
-
         tnewAccountRequest.setCustomer(tCustomer);
 
 
-        //  List<TnewAccountRequest.Agreements.Agreement> agreements = new ArrayList<>();
         var agreements = new TnewAccountRequest.Agreements();
         var agreement = new TnewAccountRequest.Agreements.Agreement();
         agreement.setNumber(form.getAgreementNumber());
-        agreement.setDate(form.getAgreementDate());
-        agreement.setDateStart(form.getAgreementDateStart());
-        agreement.setDateStop(form.getAgreementDateStop());
-        agreement.setAgrID(new BigInteger(form.getAgrID().toString()));
-        //agreements.add(agreement);
+        agreement.setDate(Util.xmlGregorianCalendar(form.getAgreementDate()));
+        agreement.setDateStart(Util.xmlGregorianCalendar(form.getAgreementDateStart()));
+        agreement.setDateStop(Util.xmlGregorianCalendar(form.getAgreementDateStop()));
+        if (form.getAgrID() != null) {
+            agreement.setAgrID(new BigInteger(form.getAgrID().toString()));
+        }
         agreements.getAgreement().add(agreement);
         tnewAccountRequest.setAgreements(agreements);
 

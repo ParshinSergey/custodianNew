@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 import javax.xml.datatype.XMLGregorianCalendar;
+import java.time.LocalDate;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class FormFO {
@@ -39,11 +40,11 @@ public class FormFO {
 
     private String docSerial;
     private String docNumber;
-    private String docDate;
+    private LocalDate docDate;
     private String docWho;
     private String docType;
-    private String docDateStart;
-    private String docDateStop;
+    private LocalDate docDateStart;
+    private LocalDate docDateStop;
     private String docSDRnumber;
 
     @Size(min = 6, max = 6)
@@ -68,14 +69,14 @@ public class FormFO {
     private String mobilePhone;
     @Email
     private String eMailGeneral;
-    private XMLGregorianCalendar birthDate;
+    private LocalDate birthDate;
     private String birthPlace;
     private boolean refusingCode;
 
     private String agreementNumber;
-    private XMLGregorianCalendar agreementDate;
-    private XMLGregorianCalendar agreementDateStart;
-    private XMLGregorianCalendar agreementDateStop;
+    private LocalDate agreementDate;
+    private LocalDate agreementDateStart;
+    private LocalDate agreementDateStop;
     private Integer agrID;
 
     public FormFO() {
@@ -257,11 +258,11 @@ public class FormFO {
         this.docNumber = docNumber;
     }
 
-    public String getDocDate() {
+    public LocalDate getDocDate() {
         return docDate;
     }
 
-    public void setDocDate(String docDate) {
+    public void setDocDate(LocalDate docDate) {
         this.docDate = docDate;
     }
 
@@ -281,19 +282,19 @@ public class FormFO {
         this.docType = docType;
     }
 
-    public String getDocDateStart() {
+    public LocalDate getDocDateStart() {
         return docDateStart;
     }
 
-    public void setDocDateStart(String docDateStart) {
+    public void setDocDateStart(LocalDate docDateStart) {
         this.docDateStart = docDateStart;
     }
 
-    public String getDocDateStop() {
+    public LocalDate getDocDateStop() {
         return docDateStop;
     }
 
-    public void setDocDateStop(String docDateStop) {
+    public void setDocDateStop(LocalDate docDateStop) {
         this.docDateStop = docDateStop;
     }
 
@@ -409,11 +410,11 @@ public class FormFO {
         this.eMailGeneral = eMailGeneral;
     }
 
-    public XMLGregorianCalendar getBirthDate() {
+    public LocalDate getBirthDate() {
         return birthDate;
     }
 
-    public void setBirthDate(XMLGregorianCalendar birthDate) {
+    public void setBirthDate(LocalDate birthDate) {
         this.birthDate = birthDate;
     }
 
@@ -441,27 +442,27 @@ public class FormFO {
         this.agreementNumber = agreementNumber;
     }
 
-    public XMLGregorianCalendar getAgreementDate() {
+    public LocalDate getAgreementDate() {
         return agreementDate;
     }
 
-    public void setAgreementDate(XMLGregorianCalendar agreementDate) {
+    public void setAgreementDate(LocalDate agreementDate) {
         this.agreementDate = agreementDate;
     }
 
-    public XMLGregorianCalendar getAgreementDateStart() {
+    public LocalDate getAgreementDateStart() {
         return agreementDateStart;
     }
 
-    public void setAgreementDateStart(XMLGregorianCalendar agreementDateStart) {
+    public void setAgreementDateStart(LocalDate agreementDateStart) {
         this.agreementDateStart = agreementDateStart;
     }
 
-    public XMLGregorianCalendar getAgreementDateStop() {
+    public LocalDate getAgreementDateStop() {
         return agreementDateStop;
     }
 
-    public void setAgreementDateStop(XMLGregorianCalendar agreementDateStop) {
+    public void setAgreementDateStop(LocalDate agreementDateStop) {
         this.agreementDateStop = agreementDateStop;
     }
 
