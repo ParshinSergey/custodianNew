@@ -5,13 +5,14 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-import javax.xml.datatype.XMLGregorianCalendar;
 import java.time.LocalDate;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class FormFO {
 
     private String requestID;
+    private String sourceAPPidentity;
+
     private String nssmcClientTypeCode;
 
     private Integer customerID;
@@ -79,6 +80,15 @@ public class FormFO {
     private LocalDate agreementDateStop;
     private Integer agrID;
 
+    private Integer brokerCustomerID;
+    private String brokerAgreementNumber;
+    private LocalDate brokerAgreementDate;
+    private LocalDate brokerAgreementDateStart;
+    private LocalDate brokerAgreementDateStop;
+    private Integer brokerAgrID;
+
+
+
     public FormFO() {
     }
 
@@ -88,6 +98,14 @@ public class FormFO {
 
     public void setRequestID(String requestID) {
         this.requestID = requestID;
+    }
+
+    public String getSourceAPPidentity() {
+        return sourceAPPidentity;
+    }
+
+    public void setSourceAPPidentity(String sourceAPPidentity) {
+        this.sourceAPPidentity = sourceAPPidentity;
     }
 
     public String getNssmcClientTypeCode() {
@@ -472,5 +490,53 @@ public class FormFO {
 
     public void setAgrID(Integer agrID) {
         this.agrID = agrID;
+    }
+
+    public Integer getBrokerCustomerID() {
+        return brokerCustomerID;
+    }
+
+    public void setBrokerCustomerID(Integer brokerCustomerID) {
+        this.brokerCustomerID = brokerCustomerID;
+    }
+
+    public String getBrokerAgreementNumber() {
+        return brokerAgreementNumber;
+    }
+
+    public void setBrokerAgreementNumber(String brokerAgreementNumber) {
+        this.brokerAgreementNumber = brokerAgreementNumber;
+    }
+
+    public LocalDate getBrokerAgreementDate() {
+        return brokerAgreementDate;
+    }
+
+    public void setBrokerAgreementDate(LocalDate brokerAgreementDate) {
+        this.brokerAgreementDate = brokerAgreementDate;
+    }
+
+    public LocalDate getBrokerAgreementDateStart() {
+        return brokerAgreementDateStart;
+    }
+
+    public void setBrokerAgreementDateStart(LocalDate brokerAgreementDateStart) {
+        this.brokerAgreementDateStart = brokerAgreementDateStart;
+    }
+
+    public LocalDate getBrokerAgreementDateStop() {
+        return brokerAgreementDateStop;
+    }
+
+    public void setBrokerAgreementDateStop(LocalDate brokerAgreementDateStop) {
+        this.brokerAgreementDateStop = brokerAgreementDateStop;
+    }
+
+    public Integer getBrokerAgrID() {
+        return brokerAgrID;
+    }
+
+    public void setBrokerAgrID(Integer brokerAgrID) {
+        this.brokerAgrID = brokerAgrID;
     }
 }

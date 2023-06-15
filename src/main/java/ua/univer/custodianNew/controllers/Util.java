@@ -67,7 +67,7 @@ public final class Util {
     static THeaderRequest getHeaderRequest() {
         THeaderRequest header = new THeaderRequest();
         //header.setRequestID(UUID.randomUUID().toString());
-        header.setRequestID("860966B1-2E36-4242-85F1-BFA4F23AA487");
+        //header.setRequestID("860966B1-2E36-4242-85F1-BFA4F23AA487");
         header.setTimeStamp(xmlGregorianCalendar( LocalDateTime.now()));
         header.setSourceAPPidentity("1DD4EC32-45DB-404A-A123-6F657895E502");
         return header;
@@ -112,12 +112,13 @@ public final class Util {
 
         var addresses = new TCustomer.Addresses();
         Taddress address = new Taddress();
+        if(form.getAddressType() != null){
         switch (form.getAddressType().toUpperCase().trim()){
            case "LEGAL" ->  address.setAddressType(TAddressType.LEGAL);
            case "POST" ->  address.setAddressType(TAddressType.POST);
            case "OTHER" ->  address.setAddressType(TAddressType.OTHER);
             default -> throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Error in Field 'AddressType'");
-        }
+        }}
         address.setCountry(form.getCountryAdr());
         address.setPostIndex(form.getPostIndex());
         address.setRegion(form.getRegion());
@@ -204,6 +205,22 @@ public final class Util {
         }
         agreements.getAgreement().add(agreement);
         tnewAccountRequest.setAgreements(agreements);
+
+
+        var brokerAgreements = new TnewAccountRequest.BrokerAgreements();
+        var brokerAgreement = new TnewAccountRequest.BrokerAgreements.BrokerAgreement();
+        if (form.getBrokerCustomerID() != null) {
+            brokerAgreement.setCustomerID(new BigInteger(form.getBrokerCustomerID().toString()));
+        }
+        brokerAgreement.setNumber(form.getBrokerAgreementNumber());
+        brokerAgreement.setDate(Util.xmlGregorianCalendar(form.getBrokerAgreementDate()));
+        brokerAgreement.setDateStart(Util.xmlGregorianCalendar(form.getBrokerAgreementDateStart()));
+        brokerAgreement.setDateStop(Util.xmlGregorianCalendar(form.getBrokerAgreementDateStop()));
+        if (form.getBrokerAgrID() != null) {
+            brokerAgreement.setAgrID(new BigInteger(form.getBrokerAgrID().toString()));
+        }
+        brokerAgreements.getBrokerAgreement().add(brokerAgreement);
+        tnewAccountRequest.setBrokerAgreements(brokerAgreements);
 
 
         TbodyRequest tbodyRequest = new TbodyRequest();
