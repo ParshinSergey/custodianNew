@@ -1,31 +1,46 @@
 package ua.univer.custodianNew.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
+import org.hibernate.validator.constraints.Length;
 
 import java.time.LocalDate;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class FormFO {
 
+    @NotBlank
+    //@Digits(integer = 9, fraction = 0)
+    @DecimalMax(value = "100000000")
     private String requestID;
-    private String sourceAPPidentity;
 
+    //private String sourceAPPidentity;
+
+    @Pattern(regexp = "^\\d{3}$", message = "должно состоять из трех цифр")
     private String nssmcClientTypeCode;
 
     private Integer customerID;
-    private String cnum;
+
+    private String CNUN;
+
     @NotBlank
+    @Pattern(regexp = "^\\d{3}$", message = "должно состоять из трех цифр")
     private String country;
+
+    @Pattern(regexp = "^\\d{3}$", message = "должно состоять из трех цифр")
     private String countryTax;
+
     @NotBlank
+    @Pattern(regexp = "^\\d{8}|\\d{10}$", message = "должно состоять из 8 или 10 цифр")
     private String idCode;
+
     @NotBlank
+    @Pattern(regexp = "0|1|4|7|8|100|200|300|777|999")
     private String clientTypeCode;
+
     @NotBlank
     private String shortName;
+
     private String longName;
 
     private String addressType;
@@ -41,11 +56,11 @@ public class FormFO {
 
     private String docSerial;
     private String docNumber;
-    private LocalDate docDate;
+    private String docDate;
     private String docWho;
     private String docType;
-    private LocalDate docDateStart;
-    private LocalDate docDateStop;
+    private String docDatestart;
+    private String docDateStop;
     private String docSDRnumber;
 
     @Size(min = 6, max = 6)
@@ -57,6 +72,7 @@ public class FormFO {
     @Size(max = 80)
     private String bankName;
     @NotBlank
+    @Length(min = 3, max = 3)
     private String currency;
     @Size(max = 14)
     private String bic;
@@ -66,25 +82,43 @@ public class FormFO {
     private boolean use4Income;
     private Integer type;
 
+    @Size(max = 34)
+    private String iban1;
+    @Length(min = 3, max = 3)
+    private String currency1;
+    private Integer type1;
+
+    @Size(max = 34)
+    private String iban2;
+    @Length(min = 3, max = 3)
+    private String currency2;
+    private Integer type2;
+
+    @Size(max = 34)
+    private String iban3;
+     @Length(min = 3, max = 3)
+    private String currency3;
+    private Integer type3;
+
     private String phone;
     private String mobilePhone;
     @Email
     private String eMailGeneral;
-    private LocalDate birthDate;
+    private String birthDate;
     private String birthPlace;
     private boolean refusingCode;
 
     private String agreementNumber;
-    private LocalDate agreementDate;
-    private LocalDate agreementDateStart;
-    private LocalDate agreementDateStop;
+    private String agreementDate;
+    private String agreementDateStart;
+    private String agreementDateStop;
     private Integer agrID;
 
     private Integer brokerCustomerID;
     private String brokerAgreementNumber;
-    private LocalDate brokerAgreementDate;
-    private LocalDate brokerAgreementDateStart;
-    private LocalDate brokerAgreementDateStop;
+    private String brokerAgreementDate;
+    private String brokerAgreementDateStart;
+    private String brokerAgreementDateStop;
     private Integer brokerAgrID;
 
 
@@ -100,14 +134,14 @@ public class FormFO {
         this.requestID = requestID;
     }
 
-    public String getSourceAPPidentity() {
+   /* public String getSourceAPPidentity() {
         return sourceAPPidentity;
     }
 
     public void setSourceAPPidentity(String sourceAPPidentity) {
         this.sourceAPPidentity = sourceAPPidentity;
     }
-
+*/
     public String getNssmcClientTypeCode() {
         return nssmcClientTypeCode;
     }
@@ -124,12 +158,12 @@ public class FormFO {
         this.customerID = customerID;
     }
 
-    public String getCnum() {
-        return cnum;
+    public String getCNUN() {
+        return CNUN;
     }
 
-    public void setCnum(String cnum) {
-        this.cnum = cnum;
+    public void setCNUN(String CNUN) {
+        this.CNUN = CNUN;
     }
 
     public String getCountry() {
@@ -276,11 +310,11 @@ public class FormFO {
         this.docNumber = docNumber;
     }
 
-    public LocalDate getDocDate() {
+    public String getDocDate() {
         return docDate;
     }
 
-    public void setDocDate(LocalDate docDate) {
+    public void setDocDate(String docDate) {
         this.docDate = docDate;
     }
 
@@ -300,19 +334,19 @@ public class FormFO {
         this.docType = docType;
     }
 
-    public LocalDate getDocDateStart() {
-        return docDateStart;
+    public String getDocDatestart() {
+        return docDatestart;
     }
 
-    public void setDocDateStart(LocalDate docDateStart) {
-        this.docDateStart = docDateStart;
+    public void setDocDatestart(String docDatestart) {
+        this.docDatestart = docDatestart;
     }
 
-    public LocalDate getDocDateStop() {
+    public String getDocDateStop() {
         return docDateStop;
     }
 
-    public void setDocDateStop(LocalDate docDateStop) {
+    public void setDocDateStop(String docDateStop) {
         this.docDateStop = docDateStop;
     }
 
@@ -404,6 +438,77 @@ public class FormFO {
         this.type = type;
     }
 
+
+    public String getIban1() {
+        return iban1;
+    }
+
+    public void setIban1(String iban1) {
+        this.iban1 = iban1;
+    }
+
+    public String getCurrency1() {
+        return currency1;
+    }
+
+    public void setCurrency1(String currency1) {
+        this.currency1 = currency1;
+    }
+
+    public Integer getType1() {
+        return type1;
+    }
+
+    public void setType1(Integer type1) { this.type1 = type1; }
+
+    public String getIban2() {
+        return iban2;
+    }
+
+    public void setIban2(String iban2) {
+        this.iban2 = iban2;
+    }
+
+    public String getCurrency2() {
+        return currency2;
+    }
+
+    public void setCurrency2(String currency2) {
+        this.currency2 = currency2;
+    }
+
+    public Integer getType2() {
+        return type2;
+    }
+
+    public void setType2(Integer type2) {
+        this.type2 = type2;
+    }
+
+    public String getIban3() {
+        return iban3;
+    }
+
+    public void setIban3(String iban3) {
+        this.iban3 = iban3;
+    }
+
+    public String getCurrency3() {
+        return currency3;
+    }
+
+    public void setCurrency3(String currency3) {
+        this.currency3 = currency3;
+    }
+
+    public Integer getType3() {
+        return type3;
+    }
+
+    public void setType3(Integer type3) {
+        this.type3 = type3;
+    }
+
     public String getPhone() {
         return phone;
     }
@@ -428,11 +533,11 @@ public class FormFO {
         this.eMailGeneral = eMailGeneral;
     }
 
-    public LocalDate getBirthDate() {
+    public String getBirthDate() {
         return birthDate;
     }
 
-    public void setBirthDate(LocalDate birthDate) {
+    public void setBirthDate(String birthDate) {
         this.birthDate = birthDate;
     }
 
@@ -460,27 +565,27 @@ public class FormFO {
         this.agreementNumber = agreementNumber;
     }
 
-    public LocalDate getAgreementDate() {
+    public String getAgreementDate() {
         return agreementDate;
     }
 
-    public void setAgreementDate(LocalDate agreementDate) {
+    public void setAgreementDate(String agreementDate) {
         this.agreementDate = agreementDate;
     }
 
-    public LocalDate getAgreementDateStart() {
+    public String getAgreementDateStart() {
         return agreementDateStart;
     }
 
-    public void setAgreementDateStart(LocalDate agreementDateStart) {
+    public void setAgreementDateStart(String agreementDateStart) {
         this.agreementDateStart = agreementDateStart;
     }
 
-    public LocalDate getAgreementDateStop() {
+    public String getAgreementDateStop() {
         return agreementDateStop;
     }
 
-    public void setAgreementDateStop(LocalDate agreementDateStop) {
+    public void setAgreementDateStop(String agreementDateStop) {
         this.agreementDateStop = agreementDateStop;
     }
 
@@ -508,27 +613,27 @@ public class FormFO {
         this.brokerAgreementNumber = brokerAgreementNumber;
     }
 
-    public LocalDate getBrokerAgreementDate() {
+    public String getBrokerAgreementDate() {
         return brokerAgreementDate;
     }
 
-    public void setBrokerAgreementDate(LocalDate brokerAgreementDate) {
+    public void setBrokerAgreementDate(String brokerAgreementDate) {
         this.brokerAgreementDate = brokerAgreementDate;
     }
 
-    public LocalDate getBrokerAgreementDateStart() {
+    public String getBrokerAgreementDateStart() {
         return brokerAgreementDateStart;
     }
 
-    public void setBrokerAgreementDateStart(LocalDate brokerAgreementDateStart) {
+    public void setBrokerAgreementDateStart(String brokerAgreementDateStart) {
         this.brokerAgreementDateStart = brokerAgreementDateStart;
     }
 
-    public LocalDate getBrokerAgreementDateStop() {
+    public String getBrokerAgreementDateStop() {
         return brokerAgreementDateStop;
     }
 
-    public void setBrokerAgreementDateStop(LocalDate brokerAgreementDateStop) {
+    public void setBrokerAgreementDateStop(String brokerAgreementDateStop) {
         this.brokerAgreementDateStop = brokerAgreementDateStop;
     }
 

@@ -23,7 +23,7 @@ public class RequestController extends BaseController {
 
     @GetMapping(value = "/balance", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Request> getBalanceToFile(@RequestBody Request request) {
-        File file = Util.getFile();
+        File file = Util.getFile("Balance", ".xml");
         saveToFileXml(request, file);
 
         return ResponseEntity.ok().body(request);

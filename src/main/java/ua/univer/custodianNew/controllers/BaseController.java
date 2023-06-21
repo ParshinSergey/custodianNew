@@ -39,7 +39,7 @@ public class BaseController {
         }
     }
 
-    protected void saveToXml(Request request, Writer writer) {
+    protected void saveXmlToWriter(Request request, Writer writer) {
         try {
             marshaller.marshal(request, writer);
         }
