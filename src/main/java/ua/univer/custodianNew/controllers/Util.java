@@ -6,17 +6,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 import ua.univer.custodianNew.dto.FormFO;
+import ua.univer.custodianNew.dto.FormSearch;
 import ua.univer.custodianNew.util.DateTimeUtil;
 
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -40,28 +37,23 @@ public final class Util {
         return file;
     }
 
-  /*  static XMLGregorianCalendar xmlGregorianCalendar(LocalDate dateTime){
-        XMLGregorianCalendar date = null;
-        if (dateTime == null){
-            return null;
-        }
-        try {
-            date = DatatypeFactory.newInstance().newXMLGregorianCalendar(dateTime.toString());
-        } catch (DatatypeConfigurationException e) {
-            throw new RuntimeException(e);
-        }
-        return date;
-    }*/
-
 
     static THeaderRequest getHeaderRequest(String number) {
         int end = Integer.parseInt(number);
         int res = 1_000_000_000 + end;
         THeaderRequest header = new THeaderRequest();
-        //header.setRequestID(UUID.randomUUID().toString());
         header.setRequestID("AA0966B1-2E36-4242-85F1-BF" + res);
         header.setTimeStamp(DateTimeUtil.xmlGregorianCalendar( LocalDateTime.now()));
-        header.setSourceAPPidentity("AA0966B1-45DB-404A-A123-6F657895E502");
+        header.setSourceAPPidentity("1DD4EC32-45DB-404A-A123-6F657895E502");
+        return header;
+    }
+
+
+    static THeaderRequest getHeaderRequest() {
+        THeaderRequest header = new THeaderRequest();
+        header.setRequestID(UUID.randomUUID().toString());
+        header.setTimeStamp(DateTimeUtil.xmlGregorianCalendar( LocalDateTime.now()));
+        header.setSourceAPPidentity("1DD4EC32-45DB-404A-A123-6F657895E502");
         return header;
     }
 
@@ -109,7 +101,7 @@ public final class Util {
            case "LEGAL" ->  address.setAddressType(TAddressType.LEGAL);
            case "POST" ->  address.setAddressType(TAddressType.POST);
            case "OTHER" ->  address.setAddressType(TAddressType.OTHER);
-            default -> throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Error in Field 'AddressType'");
+            default -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "addressType должно быть LEGAL|POST|OTHER");
         }}
         address.setCountry(form.getCountryAdr());
         address.setPostIndex(form.getPostIndex());
@@ -245,5 +237,45 @@ public final class Util {
         return tbodyRequest;
     }
 
+
+    public static TbodyRequest convertFormToSearchAccountV2(FormSearch form) {
+
+        var searchAccountV2 = new TSearchAccountV2();
+        searchAccountV2.setAccountNum(form.getAccountNum());
+        searchAccountV2.setIDCode(form.getIdCode());
+        searchAccountV2.setState(form.getState());
+        searchAccountV2.setStatus(form.getStatus());
+        searchAccountV2.setType(TResponceFilling.SIMPLE);
+
+        if (form.getDocNumber() != null) {
+            var document = new TSearchAccountV2.DocFO();
+            document.setDocSerial(form.getDocSerial());
+            document.setDocNumber(form.getDocNumber());
+            searchAccountV2.setDocFO(document);
+        }
+        TbodyRequest tbodyRequest = new TbodyRequest();
+        tbodyRequest.setSearchAccountV2(searchAccountV2);
+
+        return tbodyRequest;
+
+    }
+
+    public static TbodyRequest convertFormToSearchAccount(FormSearch form) {
+
+        var searchAccount = new TSearchAccount();
+        searchAccount.setAccountNum(form.getAccountNum());
+        searchAccount.setIDCode(form.getIdCode());
+        if (form.getDocNumber() != null) {
+            var document = new TSearchCustomer.DocFO();
+            document.setDocSerial(form.getDocSerial());
+            document.setDocNumber(form.getDocNumber());
+            searchAccount.setDocFO(document);
+        }
+
+        TbodyRequest tbodyRequest = new TbodyRequest();
+        tbodyRequest.setSearchAccount(searchAccount);
+
+        return tbodyRequest;
+    }
 }
 

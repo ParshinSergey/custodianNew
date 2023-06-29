@@ -3,10 +3,18 @@ package ua.univer.custodianNew.controllers;
 import dmt.custodian2016.Request;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.io.Writer;
+import java.net.URI;
 import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.file.Files;
 
 public class BaseController {
 
@@ -53,6 +61,36 @@ public class BaseController {
             }
             System.out.println(message);
         }
+    }
+
+    protected String writeAndSendRequestWriteResponseToFile(Request request, String prefix) throws IOException {
+
+        Writer writer = new StringWriter();
+        saveXmlToWriter(request, writer);
+        File file = Util.getFile(prefix, ".xml");
+        Files.writeString(file.toPath(), writer.toString());
+
+        HttpRequest httpRequest = HttpRequest.newBuilder()
+                .uri(URI.create(DECKRA_URL))
+                .POST(HttpRequest.BodyPublishers.ofString(writer.toString()))
+                .header("Content-Type", "application/xml")
+                .build();
+
+        HttpResponse<String> httpResponse = null;
+        try {
+            httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+        } catch (IOException | InterruptedException e) {
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Error connecting to Deckra-service. Message - " + e.getMessage());
+        }
+
+        file = Util.getFile("Response", ".xml");
+        String response =  httpResponse.body();
+        Files.writeString(file.toPath(), response);
+
+        writer.close();
+
+        return response;
+
     }
 
 }

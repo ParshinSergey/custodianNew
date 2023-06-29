@@ -70,20 +70,23 @@ public class AccountController extends BaseController {
             throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Error connecting to Deckra-service. Message - " + e.getMessage());
         }
 
-       // System.out.println(responce.body());
-
         return ResponseEntity.ok().body(responce.body());
     }
 
 
     @PostMapping (value = "/" + NEW_ACCOUNT + "Test")
-    public ResponseEntity<Request> getNewAccountTest (@RequestBody @Valid FormFO form) throws IOException {
+    public ResponseEntity<String> getNewAccountTest (@RequestBody @Valid FormFO form, BindingResult result) throws IOException {
+
+        if (result.hasErrors()){
+            StringBuilder sb = new StringBuilder();
+            result.getFieldErrors().forEach(fe -> sb.append(fe.getField()).append(" ").append(fe.getDefaultMessage()).append("\n"));
+            return new ResponseEntity<>(sb.toString(),HttpStatus.BAD_REQUEST);
+        }
+
         Request request = new Request();
 
         THeaderRequest tHeaderRequest = Util.getHeaderRequest(form.getRequestID());
         tHeaderRequest.setRequestType(NEW_ACCOUNT);
-        //tHeaderRequest.setRequestID(form.getRequestID());
-        //tHeaderRequest.setSourceAPPidentity(form.getSourceAPPidentity());
         request.setHeader(tHeaderRequest);
 
         TbodyRequest tbodyRequest = Util.convertFromFormToBody(form);
@@ -91,7 +94,7 @@ public class AccountController extends BaseController {
 
         Writer writer = new StringWriter();
         saveXmlToWriter(request, writer);
-        File file = Util.getFile("ReqNewAcc", ".xml");
+        File file = Util.getFile("ReqNewAcc", ".txt");
         Files.writeString(file.toPath(), writer.toString());
 
         HttpRequest httpRequest = HttpRequest.newBuilder()
@@ -112,7 +115,7 @@ public class AccountController extends BaseController {
         writer.close();
 
 
-        return ResponseEntity.ok().body(request);
+        return ResponseEntity.ok().body(responce.body());
     }
 
 
@@ -123,8 +126,8 @@ public class AccountController extends BaseController {
             StringBuilder sb = new StringBuilder();
             result.getFieldErrors().forEach(fe -> sb.append(fe.getField()).append(" ").append(fe.getDefaultMessage()).append("\n"));
             return new ResponseEntity<>(sb.toString(),HttpStatus.BAD_REQUEST);
-
         }
+
         Request request = new Request();
 
         THeaderRequest tHeaderRequest = Util.getHeaderRequest(form.getRequestID());
@@ -134,29 +137,9 @@ public class AccountController extends BaseController {
         TbodyRequest tbodyRequest = Util.convertFromFormToBody(form);
         request.setBody(tbodyRequest);
 
-        Writer writer = new StringWriter();
-        saveXmlToWriter(request, writer);
-        File file = Util.getFile("ReqNewAcc", ".xml");
-        Files.writeString(file.toPath(), writer.toString());
+        String deckraResponse = writeAndSendRequestWriteResponseToFile(request, "NewAccount");
 
-        HttpRequest httpRequest = HttpRequest.newBuilder()
-                .uri(URI.create(DECKRA_URL))
-                .POST(HttpRequest.BodyPublishers.ofString(writer.toString()))
-                .header("Content-Type", "application/xml")
-                .build();
-
-        HttpResponse<String> responce = null;
-        try {
-            responce = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-        } catch (IOException | InterruptedException e) {
-            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Error connecting to Deckra-service. Message - " + e.getMessage());
-        }
-
-        file = Util.getFile("ResponceNewAcc", ".xml");
-        Files.writeString(file.toPath(), responce.body());
-        writer.close();
-
-        return ResponseEntity.ok().body(responce.body());
+        return ResponseEntity.ok().body(deckraResponse);
     }
 
 

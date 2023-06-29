@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.*;
 import org.hibernate.validator.constraints.Length;
 
-import java.time.LocalDate;
-
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class FormFO {
 
@@ -15,6 +13,9 @@ public class FormFO {
     private String requestID;
 
     //private String sourceAPPidentity;
+
+
+    private String account;
 
     @Pattern(regexp = "^\\d{3}$", message = "должно состоять из трех цифр")
     private String nssmcClientTypeCode;
@@ -142,6 +143,15 @@ public class FormFO {
         this.sourceAPPidentity = sourceAPPidentity;
     }
 */
+
+    public String getAccount() {
+        return account;
+    }
+
+    public void setAccount(String account) {
+        this.account = account;
+    }
+
     public String getNssmcClientTypeCode() {
         return nssmcClientTypeCode;
     }
