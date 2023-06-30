@@ -10,6 +10,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import ua.univer.custodianNew.dto.FormFO;
+import ua.univer.custodianNew.dto.FormGet;
 
 import java.io.File;
 import java.io.IOException;
@@ -89,12 +90,12 @@ public class AccountController extends BaseController {
         tHeaderRequest.setRequestType(NEW_ACCOUNT);
         request.setHeader(tHeaderRequest);
 
-        TbodyRequest tbodyRequest = Util.convertFromFormToBody(form);
+        TbodyRequest tbodyRequest = Util.convertFormToNewAccount(form);
         request.setBody(tbodyRequest);
 
         Writer writer = new StringWriter();
         saveXmlToWriter(request, writer);
-        File file = Util.getFile("ReqNewAcc", ".txt");
+        File file = Util.getFile("ReqNewAcc", ".xml");
         Files.writeString(file.toPath(), writer.toString());
 
         HttpRequest httpRequest = HttpRequest.newBuilder()
@@ -110,7 +111,7 @@ public class AccountController extends BaseController {
             throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Error connecting to Deckra-service. Message - " + e.getMessage());
         }
 
-        file = Util.getFile("ResponceNewAcc", ".xml");
+        file = Util.getFile("ResponceNewAcc", ".txt");
         Files.writeString(file.toPath(), responce.body());
         writer.close();
 
@@ -121,6 +122,8 @@ public class AccountController extends BaseController {
 
     @PostMapping(value = "/" + NEW_ACCOUNT + "FO")
     public ResponseEntity<String> getNewAccountFO (@RequestBody @Valid FormFO form, BindingResult result) throws IOException {
+
+        logger.info("Method NewAccount.");
 
         if (result.hasErrors()){
             StringBuilder sb = new StringBuilder();
@@ -134,13 +137,62 @@ public class AccountController extends BaseController {
         tHeaderRequest.setRequestType(NEW_ACCOUNT);
         request.setHeader(tHeaderRequest);
 
-        TbodyRequest tbodyRequest = Util.convertFromFormToBody(form);
+        TbodyRequest tbodyRequest = Util.convertFormToNewAccount(form);
         request.setBody(tbodyRequest);
 
         String deckraResponse = writeAndSendRequestWriteResponseToFile(request, "NewAccount");
 
         return ResponseEntity.ok().body(deckraResponse);
     }
+
+
+    @PostMapping(value = "/getAccount")
+    public ResponseEntity<String> getAccount (@RequestBody @Valid FormGet form, BindingResult result) throws IOException {
+
+        logger.info("Method GetAccount.");
+
+        if (result.hasErrors()){
+            StringBuilder sb = new StringBuilder();
+            result.getFieldErrors().forEach(fe -> sb.append(fe.getField()).append(" ").append(fe.getDefaultMessage()).append("\n"));
+            return new ResponseEntity<>(sb.toString(),HttpStatus.BAD_REQUEST);
+        }
+
+        Request request = new Request();
+
+        THeaderRequest tHeaderRequest = Util.getHeaderRequest();
+        tHeaderRequest.setRequestType("GetAccountNum");
+        request.setHeader(tHeaderRequest);
+
+        TAccountNumRequest accountNumRequest = new TAccountNumRequest();
+
+        var nssmc = new TAccountNumRequest.NssmcClientTypeCode();
+        nssmc.setValue(form.getNssmcClientTypeCode());
+        accountNumRequest.setNssmcClientTypeCode(nssmc);
+
+        var cnum = new TAccountNumRequest.CNUM();
+        cnum.setValue(form.getCnum());
+        accountNumRequest.setCNUM(cnum);
+
+        var typeCode = new TAccountNumRequest.ClientTypeCode();
+        typeCode.setValue(form.getClientTypeCode());
+        accountNumRequest.setClientTypeCode(typeCode);
+
+        var country = new TAccountNumRequest.Country();
+        country.setValue(form.getCountry());
+        accountNumRequest.setCountry(country);
+
+        TbodyRequest tbodyRequest = new TbodyRequest();
+        tbodyRequest.setAccountNum(accountNumRequest);
+        request.setBody(tbodyRequest);
+
+        String deckraResponse = writeAndSendRequestWriteResponseToFile(request, "GetAccount");
+
+        //Responce responce =
+
+        return ResponseEntity.ok().body(deckraResponse);
+
+    }
+
 
 
 }

@@ -2,9 +2,11 @@ package ua.univer.custodianNew.config;
 
 
 import dmt.custodian2016.Request;
+import dmt.custodian2016.Responce;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -28,6 +30,15 @@ public class AppConfiguration {
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
         return marshaller;
     }
+
+    @Bean
+    public Unmarshaller getUnmarshaller() throws JAXBException {
+        JAXBContext context = JAXBContext.newInstance(Responce.class);
+        return context.createUnmarshaller();
+    }
+
+
+
 
     @Bean
     public HttpClient getHttpClient(){

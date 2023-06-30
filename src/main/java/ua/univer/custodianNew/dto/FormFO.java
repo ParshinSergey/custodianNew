@@ -12,9 +12,6 @@ public class FormFO {
     @DecimalMax(value = "100000000")
     private String requestID;
 
-    //private String sourceAPPidentity;
-
-
     private String account;
 
     @Pattern(regexp = "^\\d{3}$", message = "должно состоять из трех цифр")
@@ -22,7 +19,7 @@ public class FormFO {
 
     private Integer customerID;
 
-    private String CNUN;
+    private String cnum;
 
     @NotBlank
     @Pattern(regexp = "^\\d{3}$", message = "должно состоять из трех цифр")
@@ -135,15 +132,6 @@ public class FormFO {
         this.requestID = requestID;
     }
 
-   /* public String getSourceAPPidentity() {
-        return sourceAPPidentity;
-    }
-
-    public void setSourceAPPidentity(String sourceAPPidentity) {
-        this.sourceAPPidentity = sourceAPPidentity;
-    }
-*/
-
     public String getAccount() {
         return account;
     }
@@ -168,12 +156,12 @@ public class FormFO {
         this.customerID = customerID;
     }
 
-    public String getCNUN() {
-        return CNUN;
+    public String getCnum() {
+        return cnum;
     }
 
-    public void setCNUN(String CNUN) {
-        this.CNUN = CNUN;
+    public void setCnum(String cnum) {
+        this.cnum = cnum;
     }
 
     public String getCountry() {

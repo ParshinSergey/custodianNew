@@ -18,7 +18,7 @@ import java.net.http.HttpClient;
 @RequestMapping(value = "/api/search", produces = MediaType.APPLICATION_XML_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 public class SearchController extends BaseController{
 
-    Logger logger = LoggerFactory.getLogger(SearchController.class);
+    //Logger logger = LoggerFactory.getLogger(SearchController.class);
 
     public SearchController(Marshaller marshaller, HttpClient httpClient) {
         super(marshaller, httpClient);

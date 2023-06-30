@@ -3,6 +3,8 @@ package ua.univer.custodianNew.controllers;
 import dmt.custodian2016.Request;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -21,6 +23,8 @@ public class BaseController {
     //public static final String DECKRA_URL = "https://10.1.2.80/API_BP/cp_api.dll";
     public static final String DECKRA_URL = "https://localhost/API_BP/cp_api.dll";
     public static final String DECKRA_URL_TEST = "http://localhost:8081/api/service/result";
+
+    Logger logger = LoggerFactory.getLogger(BaseController.class);
 
     private final Marshaller marshaller;
     protected final HttpClient httpClient;
@@ -83,11 +87,19 @@ public class BaseController {
             throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Error connecting to Deckra-service. Message - " + e.getMessage());
         }
 
-        file = Util.getFile("Response", ".xml");
-        String response =  httpResponse.body();
-        Files.writeString(file.toPath(), response);
+        String response = httpResponse.body();
 
-        writer.close();
+        try {
+            file = Util.getFile("Response", ".xml");
+            Files.writeString(file.toPath(), response);
+        }
+        catch (IOException e){
+            logger.info("Error writing Output message to file.");
+        }
+        finally {
+            writer.close();
+        }
+
 
         return response;
 

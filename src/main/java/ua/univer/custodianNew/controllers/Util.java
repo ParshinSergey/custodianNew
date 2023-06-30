@@ -57,7 +57,7 @@ public final class Util {
         return header;
     }
 
-    static TbodyRequest convertFromFormToBody(FormFO form){
+    static TbodyRequest convertFormToNewAccount(FormFO form){
         TCustomer tCustomer = new TCustomer();
 
         tCustomer.setAccount(null);
@@ -66,7 +66,7 @@ public final class Util {
             tCustomer.setCustomerID(new BigInteger(form.getCustomerID().toString()));
         }
         var cnum = new TCustomer.CNUM();
-        cnum.setValue(form.getCNUN());
+        cnum.setValue(form.getCnum());
         tCustomer.setCNUM(cnum);
 
         var country = new TCustomer.Country();
