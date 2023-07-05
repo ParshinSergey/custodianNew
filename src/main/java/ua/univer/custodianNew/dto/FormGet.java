@@ -13,7 +13,7 @@ public class FormGet {
     private String cnum;
 
     @NotBlank
-    @Pattern(regexp = "0|1|4|7|8|100|200|300|777|999")
+    @Pattern(regexp = "-1|0|1|4|7|8|100|200|300|777|999")
     private String clientTypeCode;
 
     @NotBlank

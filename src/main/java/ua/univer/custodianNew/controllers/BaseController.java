@@ -1,17 +1,17 @@
 package ua.univer.custodianNew.controllers;
 
 import dmt.custodian2016.Request;
+import dmt.custodian2016.Responce;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
+import java.io.*;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -26,6 +26,8 @@ public class BaseController {
 
     Logger logger = LoggerFactory.getLogger(BaseController.class);
 
+    @Autowired
+    private Unmarshaller unmarshaller;
     private final Marshaller marshaller;
     protected final HttpClient httpClient;
 
@@ -84,6 +86,7 @@ public class BaseController {
         try {
             httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
         } catch (IOException | InterruptedException e) {
+            logger.warn("Error connecting to Deckra-service");
             throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Error connecting to Deckra-service. Message - " + e.getMessage());
         }
 
@@ -104,5 +107,18 @@ public class BaseController {
         return response;
 
     }
+
+    protected Responce getResponceFromXml(String deckraResponse) {
+        StringReader reader = new StringReader(deckraResponse);
+
+        Responce responce = null;
+        try {
+            responce = (Responce) unmarshaller.unmarshal(reader);
+        } catch (JAXBException e) {
+            logger.warn("Error unmarshalling");
+        }
+        return responce;
+    }
+
 
 }

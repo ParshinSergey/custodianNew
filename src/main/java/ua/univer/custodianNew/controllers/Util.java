@@ -81,7 +81,11 @@ public final class Util {
         idCode.setValue(form.getIdCode());
         tCustomer.setIdCode(idCode);
 
+        // OneBox не может передать 0
         var clientTypeCode = new TCustomer.ClientTypeCode();
+        if ("-1".equals(form.getClientTypeCode())){
+            form.setClientTypeCode("0");
+        }
         clientTypeCode.setValue(form.getClientTypeCode());
         tCustomer.setClientTypeCode(clientTypeCode);
 

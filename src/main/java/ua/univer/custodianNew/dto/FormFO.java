@@ -33,7 +33,7 @@ public class FormFO {
     private String idCode;
 
     @NotBlank
-    @Pattern(regexp = "0|1|4|7|8|100|200|300|777|999")
+    @Pattern(regexp = "-1|0|1|4|7|8|100|200|300|777|999")
     private String clientTypeCode;
 
     @NotBlank
@@ -70,7 +70,7 @@ public class FormFO {
     @Size(max = 80)
     private String bankName;
     @NotBlank
-    @Length(min = 3, max = 3)
+    @Pattern(regexp = "^\\d{3}$", message = "должно состоять из трех цифр")
     private String currency;
     @Size(max = 14)
     private String bic;
@@ -82,19 +82,19 @@ public class FormFO {
 
     @Size(max = 34)
     private String iban1;
-    @Length(min = 3, max = 3)
+    @Pattern(regexp = "^\\d{3}$", message = "должно состоять из трех цифр")
     private String currency1;
     private Integer type1;
 
     @Size(max = 34)
     private String iban2;
-    @Length(min = 3, max = 3)
+    @Pattern(regexp = "^\\d{3}$", message = "должно состоять из трех цифр")
     private String currency2;
     private Integer type2;
 
     @Size(max = 34)
     private String iban3;
-     @Length(min = 3, max = 3)
+    @Pattern(regexp = "^\\d{3}$", message = "должно состоять из трех цифр")
     private String currency3;
     private Integer type3;
 

@@ -2,7 +2,10 @@ package ua.univer.custodianNew.controllers;
 
 import dmt.custodian2016.*;
 import jakarta.validation.Valid;
+import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -12,10 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 import ua.univer.custodianNew.dto.FormFO;
 import ua.univer.custodianNew.dto.FormGet;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
+import java.io.*;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -27,6 +27,9 @@ import java.nio.file.Files;
 public class AccountController extends BaseController {
 
     private final static String NEW_ACCOUNT = "newAccount";
+
+    /*@Autowired
+    private Unmarshaller unmarshaller;*/
 
     public AccountController(Marshaller marshaller, HttpClient httpClient) {
         super(marshaller, httpClient);
@@ -141,8 +144,18 @@ public class AccountController extends BaseController {
         request.setBody(tbodyRequest);
 
         String deckraResponse = writeAndSendRequestWriteResponseToFile(request, "NewAccount");
+        Responce responce = getResponceFromXml(deckraResponse);
 
-        return ResponseEntity.ok().body(deckraResponse);
+        if (responce == null) {
+            return ResponseEntity.internalServerError().body("Произошла ошибка " + deckraResponse);
+        } else {
+            if ("Error".equalsIgnoreCase(responce.getHeader().getResponceType())){
+                return ResponseEntity.badRequest().body(responce.getBody().getStatus().getMessage());
+            }
+            else {
+                return ResponseEntity.ok().body(deckraResponse);
+            }
+        }
     }
 
 
@@ -151,10 +164,10 @@ public class AccountController extends BaseController {
 
         logger.info("Method GetAccount.");
 
-        if (result.hasErrors()){
+        if (result.hasErrors()) {
             StringBuilder sb = new StringBuilder();
             result.getFieldErrors().forEach(fe -> sb.append(fe.getField()).append(" ").append(fe.getDefaultMessage()).append("\n"));
-            return new ResponseEntity<>(sb.toString(),HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(sb.toString(), HttpStatus.BAD_REQUEST);
         }
 
         Request request = new Request();
@@ -174,6 +187,9 @@ public class AccountController extends BaseController {
         accountNumRequest.setCNUM(cnum);
 
         var typeCode = new TAccountNumRequest.ClientTypeCode();
+        if ("-1".equals(form.getClientTypeCode())){
+            form.setClientTypeCode("0");
+        }
         typeCode.setValue(form.getClientTypeCode());
         accountNumRequest.setClientTypeCode(typeCode);
 
@@ -187,13 +203,36 @@ public class AccountController extends BaseController {
 
         String deckraResponse = writeAndSendRequestWriteResponseToFile(request, "GetAccount");
 
-        //Responce responce =
+        Responce responce = getResponceFromXml(deckraResponse);
 
-        return ResponseEntity.ok().body(deckraResponse);
+        if (responce == null) {
+            return ResponseEntity.internalServerError().body("Произошла ошибка " + deckraResponse);
+        } else {
+            if (responce.getBody().getStatus() != null){
+                return ResponseEntity.badRequest().body(responce.getBody().getStatus().getMessage());
+            }
+            else {
+                String accountNum = responce.getBody().getAccountNum().trim();
+                int length = accountNum.length();
+                String lastSymbols = accountNum.substring(length-6, length);
+                String answer = String.format("{\"account_bill\": \"%s\", \"last_symbols\":\"%s\", \"CNUM\":\"%s\"}", accountNum, lastSymbols, form.getCnum());
+                return ResponseEntity.ok().body(answer);
+            }
+        }
 
     }
 
+    /*private Responce getResponceFromXml(String deckraResponse) {
+        StringReader reader = new StringReader(deckraResponse);
 
+        Responce responce = null;
+        try {
+            responce = (Responce) unmarshaller.unmarshal(reader);
+        } catch (JAXBException e) {
+            logger.warn("Error unmarshalling");
+        }
+        return responce;
+    }*/
 
 }
 
