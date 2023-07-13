@@ -12,7 +12,7 @@ public class FormSearch {
     private String docSerial;
     private String docNumber;
 
-    private String accountNum;
+    private String account;
 
     private String state;
     private String status;
@@ -46,12 +46,12 @@ public class FormSearch {
         this.docNumber = docNumber;
     }
 
-    public String getAccountNum() {
-        return accountNum;
+    public String getAccount() {
+        return account;
     }
 
-    public void setAccountNum(String accountNum) {
-        this.accountNum = accountNum;
+    public void setAccount(String account) {
+        this.account = account;
     }
 
     public String getState() {

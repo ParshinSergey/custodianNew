@@ -41,6 +41,11 @@ public class DateTimeUtil {
         return date;
     }
 
+    public static XMLGregorianCalendar oneBoxCalendar(String str){
+        if ("00010101".equals(str) || "19700101".equals(str)) return null;
+        return xmlGregorianCalendar(str);
+    }
+
 
 
 

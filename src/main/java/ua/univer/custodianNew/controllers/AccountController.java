@@ -2,10 +2,7 @@ package ua.univer.custodianNew.controllers;
 
 import dmt.custodian2016.*;
 import jakarta.validation.Valid;
-import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
-import jakarta.xml.bind.Unmarshaller;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import ua.univer.custodianNew.dto.FormFO;
 import ua.univer.custodianNew.dto.FormGet;
+import ua.univer.custodianNew.dto.FormSearch;
+import ua.univer.custodianNew.util.ConverterUtil;
 
 import java.io.*;
 import java.net.URI;
@@ -27,9 +26,6 @@ import java.nio.file.Files;
 public class AccountController extends BaseController {
 
     private final static String NEW_ACCOUNT = "newAccount";
-
-    /*@Autowired
-    private Unmarshaller unmarshaller;*/
 
     public AccountController(Marshaller marshaller, HttpClient httpClient) {
         super(marshaller, httpClient);
@@ -67,14 +63,14 @@ public class AccountController extends BaseController {
                 .build();
 
 
-        HttpResponse<String> responce = null;
+        HttpResponse<String> response;
         try {
-            responce = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+            response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
         } catch (IOException | InterruptedException e) {
             throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Error connecting to Deckra-service. Message - " + e.getMessage());
         }
 
-        return ResponseEntity.ok().body(responce.body());
+        return ResponseEntity.ok().body(response.body());
     }
 
 
@@ -107,19 +103,18 @@ public class AccountController extends BaseController {
                 .header("Content-Type", "application/xml")
                 .build();
 
-        HttpResponse<String> responce = null;
+        HttpResponse<String> response;
         try {
-            responce = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+            response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
         } catch (IOException | InterruptedException e) {
             throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Error connecting to Deckra-service. Message - " + e.getMessage());
         }
 
         file = Util.getFile("ResponceNewAcc", ".txt");
-        Files.writeString(file.toPath(), responce.body());
+        Files.writeString(file.toPath(), response.body());
         writer.close();
 
-
-        return ResponseEntity.ok().body(responce.body());
+        return ResponseEntity.ok().body(response.body());
     }
 
 
@@ -144,16 +139,19 @@ public class AccountController extends BaseController {
         request.setBody(tbodyRequest);
 
         String deckraResponse = writeAndSendRequestWriteResponseToFile(request, "NewAccount");
+
         Responce responce = getResponceFromXml(deckraResponse);
+        String jsonResponse = ConverterUtil.objectToJson(responce);
 
         if (responce == null) {
             return ResponseEntity.internalServerError().body("Произошла ошибка " + deckraResponse);
         } else {
             if ("Error".equalsIgnoreCase(responce.getHeader().getResponceType())){
-                return ResponseEntity.badRequest().body(responce.getBody().getStatus().getMessage());
+                String answer = String.format("{\"textmistake\": \"%s\"}", responce.getBody().getStatus().getMessage());
+                return ResponseEntity.badRequest().body(answer);
             }
             else {
-                return ResponseEntity.ok().body(deckraResponse);
+                return ResponseEntity.ok().body(jsonResponse);
             }
         }
     }
@@ -208,8 +206,9 @@ public class AccountController extends BaseController {
         if (responce == null) {
             return ResponseEntity.internalServerError().body("Произошла ошибка " + deckraResponse);
         } else {
-            if (responce.getBody().getStatus() != null){
-                return ResponseEntity.badRequest().body(responce.getBody().getStatus().getMessage());
+            if ("Error".equalsIgnoreCase(responce.getHeader().getResponceType())){
+                String answer = String.format("{\"textmistake\": \"%s\"}", responce.getBody().getStatus().getMessage());
+                return ResponseEntity.badRequest().body(answer);
             }
             else {
                 String accountNum = responce.getBody().getAccountNum().trim();
@@ -222,17 +221,37 @@ public class AccountController extends BaseController {
 
     }
 
-    /*private Responce getResponceFromXml(String deckraResponse) {
-        StringReader reader = new StringReader(deckraResponse);
+    @PostMapping(value = "/accountReserveCancel")
+    public ResponseEntity<String> accountReserveCancel (@RequestBody FormSearch form) throws IOException {
 
-        Responce responce = null;
-        try {
-            responce = (Responce) unmarshaller.unmarshal(reader);
-        } catch (JAXBException e) {
-            logger.warn("Error unmarshalling");
+        logger.info("Method AccountNumReserveCancel.");
+
+        Request request = new Request();
+
+        THeaderRequest tHeaderRequest = Util.getHeaderRequest();
+        tHeaderRequest.setRequestType("AccountNumReserveCancel");
+        request.setHeader(tHeaderRequest);
+
+        TbodyRequest tbodyRequest = new TbodyRequest();
+        tbodyRequest.setAccountNumReserveCancel(form.getAccount());
+        request.setBody(tbodyRequest);
+
+        String deckraResponse = writeAndSendRequestWriteResponseToFile(request, "ReserveCancel");
+        Responce responce = getResponceFromXml(deckraResponse);
+        String jsonResponse = ConverterUtil.objectToJson(responce);
+
+        if (responce == null) {
+            return ResponseEntity.internalServerError().body("Произошла ошибка " + deckraResponse);
+        } else {
+            if ("Error".equalsIgnoreCase(responce.getHeader().getResponceType())){
+                String answer = String.format("{\"textmistake\": \"%s\"}", responce.getBody().getStatus().getMessage());
+                return ResponseEntity.badRequest().body(answer);
+            }
+            else {
+                return ResponseEntity.ok().body(jsonResponse);
+            }
         }
-        return responce;
-    }*/
+    }
 
 }
 

@@ -2,13 +2,11 @@ package ua.univer.custodianNew.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.*;
-import org.hibernate.validator.constraints.Length;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class FormFO {
 
     @NotBlank
-    //@Digits(integer = 9, fraction = 0)
     @DecimalMax(value = "100000000")
     private String requestID;
 
@@ -50,6 +48,7 @@ public class FormFO {
     private String street;
     private String house;
     private String flat;
+    @Size(max = 256)
     private String addressFree;
 
     private String docSerial;
@@ -84,18 +83,21 @@ public class FormFO {
     private String iban1;
     @Pattern(regexp = "^\\d{3}$", message = "должно состоять из трех цифр")
     private String currency1;
+    private boolean use4Income1;
     private Integer type1;
 
     @Size(max = 34)
     private String iban2;
     @Pattern(regexp = "^\\d{3}$", message = "должно состоять из трех цифр")
     private String currency2;
+    private boolean use4Income2;
     private Integer type2;
 
     @Size(max = 34)
     private String iban3;
     @Pattern(regexp = "^\\d{3}$", message = "должно состоять из трех цифр")
     private String currency3;
+    private boolean use4Income3;
     private Integer type3;
 
     private String phone;
@@ -453,6 +455,14 @@ public class FormFO {
         this.currency1 = currency1;
     }
 
+    public boolean isUse4Income1() {
+        return use4Income1;
+    }
+
+    public void setUse4Income1(boolean use4Income1) {
+        this.use4Income1 = use4Income1;
+    }
+
     public Integer getType1() {
         return type1;
     }
@@ -473,6 +483,14 @@ public class FormFO {
 
     public void setCurrency2(String currency2) {
         this.currency2 = currency2;
+    }
+
+    public boolean isUse4Income2() {
+        return use4Income2;
+    }
+
+    public void setUse4Income2(boolean use4Income2) {
+        this.use4Income2 = use4Income2;
     }
 
     public Integer getType2() {
@@ -497,6 +515,14 @@ public class FormFO {
 
     public void setCurrency3(String currency3) {
         this.currency3 = currency3;
+    }
+
+    public boolean isUse4Income3() {
+        return use4Income3;
+    }
+
+    public void setUse4Income3(boolean use4Income3) {
+        this.use4Income3 = use4Income3;
     }
 
     public Integer getType3() {

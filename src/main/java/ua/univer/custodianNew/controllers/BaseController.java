@@ -103,9 +103,7 @@ public class BaseController {
             writer.close();
         }
 
-
         return response;
-
     }
 
     protected Responce getResponceFromXml(String deckraResponse) {
@@ -116,6 +114,9 @@ public class BaseController {
             responce = (Responce) unmarshaller.unmarshal(reader);
         } catch (JAXBException e) {
             logger.warn("Error unmarshalling");
+        }
+        finally {
+            reader.close();
         }
         return responce;
     }
