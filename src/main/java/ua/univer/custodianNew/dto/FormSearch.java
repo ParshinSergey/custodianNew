@@ -18,6 +18,10 @@ public class FormSearch {
     private String status;
     private String type;
 
+    private String isin;
+    private String depositary;
+    private String dateState;
+
 
     public FormSearch() {
     }
@@ -76,5 +80,29 @@ public class FormSearch {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getIsin() {
+        return isin;
+    }
+
+    public void setIsin(String isin) {
+        this.isin = isin;
+    }
+
+    public String getDepositary() {
+        return depositary;
+    }
+
+    public void setDepositary(String depositary) {
+        this.depositary = depositary;
+    }
+
+    public String getDateState() {
+        return dateState;
+    }
+
+    public void setDateState(String dateState) {
+        this.dateState = dateState;
     }
 }
